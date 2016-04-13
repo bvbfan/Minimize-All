@@ -39,7 +39,7 @@ public:
     bool active() const;
 
 public Q_SLOTS:
-    void toggle();
+    void toggleActivate(bool unminimize = false);
 
 Q_SIGNALS:
     void activeChanged();

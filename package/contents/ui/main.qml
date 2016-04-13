@@ -32,7 +32,7 @@ Item {
     Layout.minimumHeight: units.gridUnit
 
     Plasmoid.preferredRepresentation: Plasmoid.fullRepresentation
-    Plasmoid.onActivated: activate()
+
 
     function activate() {
         if (!minimizeall.active) {

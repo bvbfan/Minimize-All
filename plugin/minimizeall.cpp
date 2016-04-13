@@ -42,34 +42,29 @@ void MinimizeAll::minimizeAllWindows()
 {
     m_minimizedWindows.clear();
 
-    foreach (const WId &wid, KWindowSystem::self()->stackingOrder()) {
+    Q_FOREACH (const WId &wid, KWindowSystem::self()->stackingOrder()) {
         if (match(wid, false)) { // skip hidden windows
             m_minimizedWindows << wid;
             KWindowSystem::self()->minimizeWindow(wid);
         }
     }
 
-    if(!m_active) {
+    if (!m_active) {
         m_active = true;
         Q_EMIT activeChanged();
     }
 
-    QTimer::singleShot(0, this, [this] () {
-        connect(KWindowSystem::self(), &KWindowSystem::activeWindowChanged,
-                this, &MinimizeAll::toggle);
-        connect(KWindowSystem::self(), &KWindowSystem::currentDesktopChanged,
-                this, &MinimizeAll::toggle);
-    });
+    connect(KWindowSystem::self(), &KWindowSystem::windowAdded,
+            this, [this]() { toggleActivate(); });
+    connect(KWindowSystem::self(), &KWindowSystem::currentDesktopChanged,
+            this, [this]() { toggleActivate(); });
+    connect(KWindowSystem::self(), &KWindowSystem::stackingOrderChanged,
+            this, [this]() { toggleActivate(); });
 }
 
 void MinimizeAll::unminimizeAllWindows()
 {
-    for (auto wid : m_minimizedWindows) {
-        if (match(wid)) {
-            KWindowSystem::self()->unminimizeWindow(wid);
-        }
-    }
-    toggle();
+    toggleActivate(true);
 }
 
 bool MinimizeAll::match(const WId& wid, bool includehidden) const
@@ -86,17 +81,19 @@ bool MinimizeAll::match(const WId& wid, bool includehidden) const
     return match;
 }
 
-void MinimizeAll::toggle()
+void MinimizeAll::toggleActivate(bool unminimize)
 {
     if (m_active) {
-        disconnect(KWindowSystem::self(), &KWindowSystem::activeWindowChanged,
-                   this, &MinimizeAll::toggle);
-        disconnect(KWindowSystem::self(), &KWindowSystem::currentDesktopChanged,
-                   this, &MinimizeAll::toggle);
+        disconnect(KWindowSystem::self(), 0, this, 0);
 
+        if (unminimize) {
+            Q_FOREACH (auto wid, m_minimizedWindows) {
+                if (match(wid)) {
+                    KWindowSystem::self()->unminimizeWindow(wid);
+                }
+            }
+        }
         m_active = false;
         Q_EMIT activeChanged();
-        m_minimizedWindows.clear();
     }
 }
-
