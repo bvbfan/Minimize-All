@@ -49,13 +49,17 @@ void MinimizeAll::minimizeAllWindows()
         }
     }
 
+    if (m_minimizedWindows.isEmpty()) {
+        return;
+    }
+
     if (!m_active) {
         m_active = true;
         Q_EMIT activeChanged();
     }
 
-    connect(KWindowSystem::self(), &KWindowSystem::windowAdded,
-            this, [this]() { toggleActivate(); });
+    connect(KWindowSystem::self(), static_cast<void (KWindowSystem::*)(WId)>(&KWindowSystem::windowChanged),
+            this, [this](WId wid) { if (match(wid, false)) toggleActivate(); });
     connect(KWindowSystem::self(), &KWindowSystem::currentDesktopChanged,
             this, [this]() { toggleActivate(); });
     connect(KWindowSystem::self(), &KWindowSystem::stackingOrderChanged,
@@ -73,7 +77,9 @@ bool MinimizeAll::match(const WId& wid, bool includehidden) const
     KWindowInfo info(wid, NET::WMState | NET::WMWindowType | NET::WMDesktop);
     if (!includehidden && info.hasState(NET::Hidden)) {
         match = false;
-    } else if (info.windowType(NET::DockMask ) == NET::Dock) {
+    } else if (info.windowType(NET::DesktopMask) == NET::Desktop) {
+        match = false;
+    } else if (info.windowType(NET::DockMask) == NET::Dock) {
         match = false;
     } else if (!info.isOnCurrentDesktop()) {
         match = false;

@@ -19,3 +19,4 @@ cmake .. \
 make
 sudo make install
 kquitapp5 plasmashell && plasmashell &
+plasmapkg2 -i ../org.kde.minimizeall.plasmoid
