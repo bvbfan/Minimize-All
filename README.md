@@ -5,6 +5,11 @@ Plasma 5 applet for minimizing visible windows
 * Plasma 5 & Qt 5.3+
 * Extra CMake Modules (only for building)
 
+### More Specifically for Ubuntu 16.04 Xenial
+```
+sudo apt-get install extra-cmake-modules qtdeclarative5-dev libkf5windowsystem-dev
+```
+
 ## Compile and install
 ```
 git clone https://github.com/bvbfan/Minimize-All
