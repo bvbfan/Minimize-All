@@ -7,7 +7,7 @@ Plasma 5 applet for minimizing visible windows
 
 ### More Specifically for Ubuntu 16.04 Xenial
 ```
-sudo apt-get install cmake extra-cmake-modules qtdeclarative5-dev libkf5windowsystem-dev
+sudo apt-get install g++ cmake extra-cmake-modules qtdeclarative5-dev libkf5windowsystem-dev
 ```
 
 ## Compile and install
